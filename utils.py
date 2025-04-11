@@ -1,0 +1,33 @@
+import requests
+import streamlit as st
+
+
+def get_coordinates(city_name):
+    url = f"https://nominatim.openstreetmap.org/search?q={city_name}&format=json&limit=1"
+    headers = {"User-Agent": "WeatherDashboardApp/1.0 (contact@example.com)"}
+    response = requests.get(url, headers=headers)
+
+    if response.status_code == 200:
+        location_data = response.json()
+        if location_data:
+            location = location_data[0]
+            return float(location['lat']), float(location['lon'])
+        else:
+            st.warning(
+                "City not found. Try adding the country name (e.g., 'Paris, France').")
+            return None, None
+    else:
+        st.error(
+            f"API request failed with status code {response.status_code}: {response.text}")
+        return None, None
+
+
+def get_weather_data(lat, lon, hours):
+    url = f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current=temperature_2m,relative_humidity_2m,is_day,precipitation,rain&daily=shortwave_radiation_sum"
+    response = requests.get(url)
+
+    if response.status_code == 200:
+        return response.json()
+    else:
+        st.error("Failed to retrieve weather data.")
+        return None
