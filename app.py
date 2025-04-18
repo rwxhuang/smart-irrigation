@@ -20,6 +20,16 @@ def get_data() -> pd.DataFrame:
     df = df.sort_values('TIMESTAMP')
     return df
 
+    """
+    Example using API:
+    headers = {
+        "Authorization": f"Bearer {st.secrets['access_token']}"
+    }
+    data = utils.get_particle_data(api_endpoint = "allDataAPI", headers=headers)
+    df = pd.DataFrame(data)
+    return df
+    """
+
 
 df = get_data()
 # dashboard title

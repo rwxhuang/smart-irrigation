@@ -31,3 +31,20 @@ def get_weather_data(lat, lon, hours):
     else:
         st.error("Failed to retrieve weather data.")
         return None
+    
+
+def get_particle_data(api_endpoint = "allDataAPI", **kwargs):
+    device_id = "420027000d47373336373936"
+
+    url = f"https://api.particle.io/v1/devices/{device_id}/{api_endpoint}"
+
+    response = requests.get(url, **kwargs)
+
+    if response.status_code == 200:
+        data = response.json()
+        print(f"{api_endpoint} value: {data['result']}")
+        
+        return data
+    else:
+        print("Error:", response.status_code, response.text)
+        raise Exception("Failed to retrieve particle data.")
