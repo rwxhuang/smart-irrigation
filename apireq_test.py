@@ -17,7 +17,7 @@ if response.status_code == 200:
     data = response.json()
     print(f"{variable_name} value: {data['result']}")
     print()
-    value_headers = ["Soil Moisture (1)", "Soil Moisture (1)", "Soil Moisture (1)", "Soil Moisture (1)", "Temperature (C)", "RH", "Flow Rate (1)"]
+    value_headers = ["Soil Moisture (1)", "Soil Moisture (2)", "Soil Moisture (3)", "Soil Moisture (4)", "External Temperature (C)", "External RH (%)", "External Temperature (F)", "Internal Temperature (C)", "Internal RH (%)", "Internal Temperature (F)", "Flow Rate (1)", "Flow Rate (2)"]
     for i,j in zip(value_headers, data['result'].split(",")):
         print(f"{i}: {j}")
 else:
