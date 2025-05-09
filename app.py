@@ -22,9 +22,12 @@ os.makedirs("logs", exist_ok=True)
 log_filename = "logs/live_data_log.csv"
 
 # Thresholds (ALERTS)
-FLOW1_MAX = 40.0  # mL/s
-FLOW2_MAX = 40.0
-SOIL_MIN = 20.0   # %
+FLOW1_MIN = 0.10  # L/m
+FLOW2_MIN = 0.10
+FLOW1_MAX = 5.00  # L/m
+FLOW2_MAX = 5.00
+SOIL_MIN = 40.0   # %
+SOIL_MAX = 80.0
 
 @st.cache_data(ttl=300)
 def get_weather_data_cached(lat, lon, hours=1):
@@ -163,19 +166,25 @@ with placeholder.container():
     st.line_chart(live_data.set_index("TIMESTAMP")[["Flow1", "Flow2"]])
 
     colf1, colf2 = st.columns(2)
-    colf1.metric("Flow 1 (mL/s)", f"{latest['Flow1']:.1f}")
-    colf2.metric("Flow 2 (mL/s)", f"{latest['Flow2']:.1f}")
+    colf1.metric("Flow 1 (L/m)", f"{latest['Flow1']:.1f}")
+    colf2.metric("Flow 2 (L/m)", f"{latest['Flow2']:.1f}")
 
     # --- Alerts ---
     alerts = []
     for i in range(1, 5):
         if latest[f"Soil{i}"] < SOIL_MIN:
             alerts.append(f"⚠️ Soil Moisture {i} too low: {latest[f'Soil{i}']:.1f}%")
+        elif latest[f"Soil{i}"] > SOIL_MAX:
+            alerts.append(f"⚠️ Soil Moisture {i} too high: {latest[f'Soil{i}']:.1f}%")
 
     if latest["Flow1"] > FLOW1_MAX:
-        alerts.append(f"🚨 Flow1 too high: {latest['Flow1']:.1f} mL/s")
+        alerts.append(f"🚨 Flow1 too high: {latest['Flow1']:.1f} L/m")
+    elif latest["Flow1"] < FLOW1_MIN:
+        alerts.append(f"🚨 Flow1 too low: {latest['Flow1']:.1f} L/m")
     if latest["Flow2"] > FLOW2_MAX:
-        alerts.append(f"🚨 Flow2 too high: {latest['Flow2']:.1f} mL/s")
+        alerts.append(f"🚨 Flow2 too high: {latest['Flow2']:.1f} L/m")
+    elif latest["Flow2"] < FLOW2_MIN:
+        alerts.append(f"🚨 Flow2 too low: {latest['Flow2']:.1f} L/m")
 
     if alerts:
         st.warning("### ⚠️ Alerts")
